@@ -6,15 +6,16 @@ import { connect, disconnect } from "../../../utils/mongoose";
 
 type Data = IPoll;
 
-interface Request extends NextApiRequest {
-  body: {
-    name: string;
-    choices: string[];
-    options?: {
-      isMultiple?: boolean;
-      endDate?: Date;
-    };
+interface IBody {
+  name: string;
+  choices: string[];
+  options?: {
+    isMultiple?: boolean;
+    endDate?: Date;
   };
+}
+interface Request extends NextApiRequest {
+  body: string;
 }
 
 export default async function handler(
@@ -23,7 +24,8 @@ export default async function handler(
 ) {
   // DB
   await connect();
-  const { name, choices, options } = req.body;
+  // @ts-ignore
+  const { name, choices, options } = JSON.parse(req.body) as IBody;
   const createdPoll = await Poll.create({
     name,
     choices,
